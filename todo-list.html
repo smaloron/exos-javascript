@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Liste des tâches</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body class="container-fluid">
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8 bg-success">
+            <h1>Liste des tâches</h1>
+
+
+            <form class="mt-2 form-inline" method="post">
+                <div class="form-group">
+                    <label>tâche</label>
+                    <input type="text" id="taskName" class="form-control mx-2">
+                </div>
+                <div class="form-group">
+                    <label>catégorie</label>
+                    <select id="category" class="form-control mx-2">
+                        <option value="">Choisissez une catégorie</option>
+                        <option>Perso</option>
+                        <option>Travail</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+
+            </form>
+
+            <table class="table table-bordered table-striped my-4">
+                <tr>
+                    <th>Fait</th>
+                    <th>Tâche</th>
+                    <th>Catégorie</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <script>
+
+        //Structure des données
+        var taskList = [
+            { taskName: "Acheter du lait", category: "Perso", done: false, id: 1 },
+            { taskName: "Envoyer la facture", category: "Travail", done: true, id: 2 },
+        ];
+
+        
+
+        /****************************************************
+        * Définition des cibles du DOM
+        ****************************************************/
+        var tableElement = document.querySelector("table");
+        var formElement = document.querySelector("form");
+        var taskInput = document.getElementById("taskName");
+        var categoryInput = document.getElementById("category");
+
+        /****************************************************
+        * Gestion de l'affichage des tâches dans un tableau
+        *****************************************************/
+
+        //Affichage d'une ligne
+        function renderTaskRow(task) {
+            //Création de la ligne
+            let tableRow = document.createElement("tr");
+
+            //création de la cellule "Fait"
+            let doneCell = document.createElement("td");
+            //création de la case à cocher
+            let doneCheckbox = document.createElement("input");
+            doneCheckbox.setAttribute("type", "checkbox");
+            doneCheckbox.setAttribute("class", "done-checkbox");
+            if (task.done) {
+                doneCheckbox.setAttribute("checked", "checked");
+            }
+            //ajout de la case à cocher à la cellule
+            doneCell.appendChild(doneCheckbox);
+
+            //création de la cellule pour le nom de la tâche
+            let taskNameCell = document.createElement("td");
+            taskNameCell.textContent = task.taskName;
+
+            //création de la cellule pour la catégorie
+            let categoryCell = document.createElement("td");
+            categoryCell.textContent = task.category;
+
+            //Création de la cellule pour l'action
+            let actionCell = document.createElement("td");
+            //Création du bouton supprimer
+            let deleteButton = document.createElement("button");
+            deleteButton.setAttribute("type", "button");
+            deleteButton.setAttribute("class", "btn btn-danger delete");
+            deleteButton.setAttribute("data-id", task.id);
+            deleteButton.textContent = "Supprimer";
+            //ajout du bouton à la cellule
+            actionCell.appendChild(deleteButton);
+
+            //ajout des cellules
+            tableRow.appendChild(doneCell);
+            tableRow.appendChild(taskNameCell);
+            tableRow.appendChild(categoryCell);
+            tableRow.appendChild(actionCell);
+
+            //Ajout de la ligne à la table HTML (dans le DOM)
+            tableElement.appendChild(tableRow);
+
+        }
+
+        /****************************************************
+        * Gestion de l'ajout des tâches
+        ****************************************************/
+        formElement.onsubmit = function (ev) {
+            //Empêche l'envoi du formulaire
+            ev.preventDefault();
+
+            //Récupération de la saisie
+            let taskNameText = taskInput.value.trim();
+            let categoryNameText = categoryInput.value.trim();
+
+            //Création d'une nouvelle tâche 
+            //uniquement si la saisie n'est pas vide
+            if (taskNameText != "" && categoryNameText != "") {
+                //Création d'un objet tâche
+                let task = {
+                    taskName: taskNameText,
+                    category: categoryNameText,
+                    done: false,
+                    id: (new Date()).getTime()
+                }
+
+                //ajout de la nouvelle tâche à la liste
+                taskList.push(task);
+
+                //ajout de la tâche au tableau html
+                renderTaskRow(task);
+
+                //persistence des tâches
+                window.localStorage.setItem("todos", JSON.stringify(taskList));
+
+                //Réinitialisation du formulaire
+                taskInput.value = "";
+                categoryInput.selectedIndex = 0;
+
+                taskInput.focus();
+            }
+
+            return false;
+        }
+
+        /***************************************************
+        * Gestion de la suppression
+        ***************************************************/
+        tableElement.onclick = function (ev) {
+            let target = ev.target;
+            //Uniquement si on a cliqué sur le bouton supprimer
+            if (target.classList.contains("delete")) {
+                //Récupération de l'id de la tâche sur laquelle on a cliqué
+                let id = target.getAttribute("data-id");
+
+                //Recherche de l'index du tableau correspondant à l'id
+                let index = taskList.findIndex(function (item) {
+                    return item.id == id;
+                });
+
+                //suppression dans le tableau taskList
+                taskList.splice(index, 1);
+
+                //persistence des tâches
+                window.localStorage.setItem("todos", JSON.stringify(taskList));
+
+                //Suppression de la ligne dans le DOM
+                target.parentNode.parentNode.remove();
+            }
+        }
+
+
+        /***************************************************
+        * Lancement de l'application
+        ***************************************************/
+        //récupération des données depuis le localStorage
+        taskList = JSON.parse(window.localStorage.getItem("todos")) || [];
+        //Affichage de toutes les tâches
+
+
+        /*
+        setTimeout(
+            function(){
+                for (task of taskList) {
+                    renderTaskRow(task);
+                }
+            },
+            5000
+        );
+        */
+
+        console.log("affichage de la liste des tâches");
+
+        var currentIndex = 0;   
+        var interval = setInterval(
+            function(){
+                if(taskList.length == 0 || currentIndex > taskList.length-1){
+                    clearInterval(interval);
+                }
+
+                renderTaskRow(taskList[currentIndex]);
+                currentIndex++;
+                
+            },
+            500
+        );
+
+        
+
+    </script>
+
+</body>
+
+</html>

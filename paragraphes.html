@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Paragraphes dynamiques</title>
+    <style>
+        h1 {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Titre 1</h1>
+    <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore, eveniet. Pariatur, nihil, odio ducimus fugiat
+        esse incidunt laborum, tempore ad beatae voluptatem error. Modi ab doloremque qui maxime in sequi!
+    </p>
+
+    <h1>Titre 2</h1>
+    <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore, eveniet. Pariatur, nihil, odio ducimus fugiat
+        esse incidunt laborum, tempore ad beatae voluptatem error. Modi ab doloremque qui maxime in sequi!
+    </p>
+
+    <h1>Titre 3</h1>
+    <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore, eveniet. Pariatur, nihil, odio ducimus fugiat
+        esse incidunt laborum, tempore ad beatae voluptatem error. Modi ab doloremque qui maxime in sequi!
+    </p>
+
+    <h1>Titre 4</h1>
+    <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore, eveniet. Pariatur, nihil, odio ducimus fugiat
+        esse incidunt laborum, tempore ad beatae voluptatem error. Modi ab doloremque qui maxime in sequi!
+    </p>
+
+    <h1>Titre 5</h1>
+    <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore, eveniet. Pariatur, nihil, odio ducimus fugiat
+        esse incidunt laborum, tempore ad beatae voluptatem error. Modi ab doloremque qui maxime in sequi!
+    </p>
+
+    <script>
+        //Définition des cibles
+        var titres = document.querySelectorAll("h1");
+        
+        function cliqueSurtTitre(even) {
+            let paragraphe = even.target.nextElementSibling;
+            if(paragraphe.style.display == "none"){
+                paragraphe.style.display = "block";
+                even.target.style.backgroundColor= "white";
+            } else {
+                paragraphe.style.display = "none";
+                even.target.style.backgroundColor= "red";
+            }
+        }
+
+        //Affectation de l'événement à chaque titre
+        for(element of titres){
+            element.onclick = cliqueSurtTitre;
+        }
+        
+
+    </script>
+
+</body>
+
+</html>
